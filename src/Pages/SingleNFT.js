@@ -14,7 +14,7 @@ import DeleteOutlineIcon from "@mui/icons-material/Delete";
 import { pink } from "@mui/material/colors";
 import TransctionModal from "../components/shared/TransctionModal";
 import HeaderWrapper from "../components/shared/BackgroundUI";
-import { getSymbol } from "../utils/currencySymbol";
+// import { getSymbol } from "../utils/currencySymbol";
 import { getResizedFile } from "../utils/reSizeImg";
 
 import "../styles/background.css";
