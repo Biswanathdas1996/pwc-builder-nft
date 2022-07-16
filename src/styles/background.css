@@ -1,0 +1,117 @@
+.header-wrapper-create {
+  background: url("../assets/images/home-bg.jpg");
+  /* background-position: top left; */
+  position: relative;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.header-wrapper-form {
+  background: url("../assets/images/back.png");
+  /* background-position: top left; */
+  position: relative;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.header-wrapper-frac-form {
+  background: url("../assets/images/back.png");
+  /* background-position: top left; */
+  position: relative;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.layer {
+  background-color: rgb(36 36 36 / 59%);
+  background-position: top left;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 14px 6px;
+}
+.form-layer {
+  background-color: rgb(40 40 40 / 95%);
+  background-position: top left;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 14px 6px;
+}
+
+@media (max-width: 550px) {
+  .header-wrapper-home,
+  .header-wrapper-browse {
+    padding: 15px 20px;
+  }
+}
+
+.navbar-home,
+.navbar-signin {
+  max-width: 1850px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 175px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.navbar-signin {
+  margin-bottom: 75px;
+}
+
+@media (max-width: 550px) {
+  .navbar-home,
+  .navbar-signin {
+    margin-bottom: 100px;
+  }
+}
+.h2-sub-text {
+  margin-top: 20px;
+  max-width: 400px;
+  font-size: 24px;
+  text-align: center;
+  z-index: 2;
+  color: rgb(138, 147, 155);
+}
+
+.navbar-browse {
+  max-width: 1850px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 175px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.logo {
+  height: 60px;
+  width: 60px;
+}
+
+.signin-button {
+  display: block;
+  background-color: #e50914;
+  width: 84px;
+  height: fit-content;
+  color: #fff;
+  border: 0;
+  font-size: 15px;
+  border-radius: 3px;
+  padding: 8px 17px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.header-link,
+.header-link-bold {
+  padding: 5px;
+}
+
+.header-link a {
+  color: #fff;
+  margin-left: 25px;
+  cursor: pointer;
+}
+
+.header-link-bold {
+  font-weight: bolder;
+}
