@@ -14,6 +14,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import PrivetContent from "./PrivetContent";
 import Attributes from "./Attributes";
+import AccessablitySettings from "./AccessablitySettings";
 import TransactionHistory from "./TransactionHistory";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
@@ -35,9 +36,10 @@ const RightContent = ({
   tokenId,
   fetchNftInfo,
   isDoingPayment,
+  listingState,
 }) => {
   const [value, setValue] = React.useState("2");
-
+  console.log("listingState--------->", listingState);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -147,33 +149,35 @@ const RightContent = ({
       </Grid>
       {owner !== account ? (
         <div style={{ marginTop: "30px", marginBottom: "30px" }}>
-          <Button
-            variant="contained"
-            sx={{
-              textTransform: "none",
-              width: "220px",
-              height: "40px",
-              fontSize: "12px",
-              textAlign: "center",
-              margin: 1,
-            }}
-            onClick={() => buynow(`NFT #${tokenId}`)}
-          >
-            {isDoingPayment ? (
-              <>
-                <CircularProgress
-                  size={20}
-                  style={{ marginRight: 10 }}
-                  color="white"
-                />{" "}
-                Please wait...
-              </>
-            ) : (
-              <>
-                Buy for {price / 1000000000000000000} {getSymbol()}
-              </>
-            )}
-          </Button>
+          {listingState === "1" && (
+            <Button
+              variant="contained"
+              sx={{
+                textTransform: "none",
+                width: "220px",
+                height: "40px",
+                fontSize: "12px",
+                textAlign: "center",
+                margin: 1,
+              }}
+              onClick={() => buynow(`NFT #${tokenId}`)}
+            >
+              {isDoingPayment ? (
+                <>
+                  <CircularProgress
+                    size={20}
+                    style={{ marginRight: 10 }}
+                    color="white"
+                  />{" "}
+                  Please wait...
+                </>
+              ) : (
+                <>
+                  Buy for {price / 1000000000000000000} {getSymbol()}
+                </>
+              )}
+            </Button>
+          )}
           <Button
             variant="outlined"
             sx={{
@@ -239,6 +243,7 @@ const RightContent = ({
                   color: "#000000",
                 }}
               />
+
               <Tab
                 label="Private Content"
                 value="3"
@@ -247,12 +252,24 @@ const RightContent = ({
                   fontWeight: "bold",
                   color: "#000000",
                 }}
+                disabled={owner !== account}
+              />
+              <Tab
+                label="Accessablity"
+                value="4"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  color: "#000000",
+                }}
+                disabled={owner !== account}
               />
             </TabList>
           </Box>
           <Attributes attributes={attributes} />
           <TransactionHistory tokenId={tokenId} />
           <PrivetContent tokenId={tokenId} />
+          <AccessablitySettings tokenId={tokenId} />
         </TabContext>
       </Box>
     </Container>

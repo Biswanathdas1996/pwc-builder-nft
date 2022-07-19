@@ -25,9 +25,12 @@ const MyCollections = () => {
     <Grid container spacing={4}>
       {tokens?.length > 0 ? (
         tokens?.map((item, key) => (
-          <Grid item xs={12} sm={6} md={4} key={`feb_${key}`}>
-            <NftCard tokenId={item} reload={fetchAllPosts} />
-          </Grid>
+          <NftCard
+            tokenId={item}
+            reload={fetchAllPosts}
+            key={`feb_${key}`}
+            isUserProfilePage={true}
+          />
         ))
       ) : loading ? (
         <Loader count="8" xs={12} sm={3} md={3} lg={3} />

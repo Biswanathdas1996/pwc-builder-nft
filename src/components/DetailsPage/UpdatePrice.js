@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Grid } from "@mui/material";
-import { _transction } from "../../CONTRACT-ABI/connect";
+import { _transction_signed } from "../../CONTRACT-ABI/connect";
 import TransctionModal from "../shared/TransctionModal";
 import Web3 from "web3";
 import { getSymbol } from "../../utils/currencySymbol";
@@ -21,7 +21,7 @@ const UpdatePrice = ({ price, tokenId, fetchNftInfo }) => {
     setStart(true);
     let responseData;
 
-    responseData = await _transction(
+    responseData = await _transction_signed(
       "_setNftPrice",
       tokenId,
       web3.utils.toWei(amount.toString(), "ether")

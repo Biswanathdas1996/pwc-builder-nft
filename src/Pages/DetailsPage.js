@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { CssBaseline, Container, Grid } from "@mui/material";
+import { CssBaseline, Container, Grid, Typography } from "@mui/material";
 import RightContent from "../components/DetailsPage/RightContent";
 import LeftConrent from "../components/DetailsPage/LeftConrent";
 import { _fetch, _account } from "../CONTRACT-ABI/connect";
@@ -27,6 +27,7 @@ export default function DetailsPage({ match }) {
   const [address, setAddress] = useState(null);
   const [isDoingPayment, setIsDoingPayment] = useState(false);
   const { tokenId } = useParams();
+  const [listingState, setListingState] = useState(null);
 
   useEffect(() => {
     fetchNftInfo();
@@ -48,6 +49,8 @@ export default function DetailsPage({ match }) {
     setAccount(account);
     const price = await _fetch("getNftPrice", tokenId);
     setPrice(price);
+    const getTokenListingState = await _fetch("getTokenListingState", tokenId);
+    setListingState(getTokenListingState?.tokenState);
 
     await fetch(getAllTokenUri)
       .then((response) => response.json())
@@ -77,53 +80,70 @@ export default function DetailsPage({ match }) {
     setResponse(null);
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      {start && <TransctionModal response={response} modalClose={modalClose} />}
-      <CssBaseline />
+  if (listingState === "3" && owner !== account) {
+    return (
       <Container>
-        <main style={{ marginBottom: 30 }}>
-          {nftData ? (
-            <Grid
-              justifyContent="space-between"
-              container
-              spacing={4}
-              marginY="50px"
-            >
-              <Grid item xs={12} md={5}>
-                <LeftConrent
-                  nftData={nftData}
-                  tokenId={tokenId}
-                  ContractAddress={address}
-                />
-              </Grid>
-
-              <Grid item xs={12} md={7}>
-                <RightContent
-                  nftData={nftData}
-                  owner={owner}
-                  price={price}
-                  buynow={buynow}
-                  account={account}
-                  tokenId={tokenId}
-                  fetchNftInfo={fetchNftInfo}
-                  isDoingPayment={isDoingPayment}
-                />
-              </Grid>
-            </Grid>
-          ) : (
-            <Grid
-              justifyContent="space-between"
-              container
-              spacing={4}
-              marginY="50px"
-            >
-              <Loader count="2" xs={12} sm={12} md={6} lg={6} />
-            </Grid>
-          )}
-          <RecentActivity />
-        </main>
+        <Grid spacing={4} marginY="50px">
+          <Typography
+            sx={{ fontSize: 30, fontWeight: "bold", textAlign: "center" }}
+          >
+            Only Owner of the token can access this page
+          </Typography>
+        </Grid>
       </Container>
-    </ThemeProvider>
-  );
+    );
+  } else {
+    return (
+      <ThemeProvider theme={theme}>
+        {start && (
+          <TransctionModal response={response} modalClose={modalClose} />
+        )}
+        <CssBaseline />
+        <Container>
+          <main style={{ marginBottom: 30 }}>
+            {nftData ? (
+              <Grid
+                justifyContent="space-between"
+                container
+                spacing={4}
+                marginY="50px"
+              >
+                <Grid item xs={12} md={5}>
+                  <LeftConrent
+                    nftData={nftData}
+                    tokenId={tokenId}
+                    ContractAddress={address}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={7}>
+                  <RightContent
+                    nftData={nftData}
+                    owner={owner}
+                    price={price}
+                    buynow={buynow}
+                    account={account}
+                    tokenId={tokenId}
+                    fetchNftInfo={fetchNftInfo}
+                    isDoingPayment={isDoingPayment}
+                    listingState={listingState}
+                  />
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid
+                justifyContent="space-between"
+                container
+                spacing={4}
+                marginY="50px"
+              >
+                <Loader count="2" xs={12} sm={12} md={6} lg={6} />
+              </Grid>
+            )}
+            <RecentActivity />
+          </main>
+        </Container>
+      </ThemeProvider>
+    );
+  }
 }

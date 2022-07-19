@@ -16,8 +16,13 @@ import { getIcon } from "../../utils/currencyIcon";
 import { getSymbol } from "../../utils/currencySymbol";
 import { convertWeiToToken } from "../../utils/convertPrice";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import Loader from "../shared/Loader";
 
-export default function NFTCard({ tokenId, reload = () => null }) {
+export default function NFTCard({
+  tokenId,
+  reload = () => null,
+  isUserProfilePage = false,
+}) {
   const [nftData, setNftData] = useState(null);
   const [start, setStart] = useState(false);
   const [price, setPrice] = useState(null);
@@ -25,7 +30,10 @@ export default function NFTCard({ tokenId, reload = () => null }) {
   const [owner, setOwner] = useState(null);
   const [account, setAccount] = useState(null);
 
+  const [listingState, setListingState] = useState(null);
+
   const [isDoingPayment, setIsDoingPayment] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   let history = useNavigate();
 
@@ -35,11 +43,16 @@ export default function NFTCard({ tokenId, reload = () => null }) {
   }, []);
 
   async function fetchNftInfo() {
+    setLoading(true);
     const getAllTokenUri = await _fetch("tokenURI", tokenId);
     const price = await _fetch("getNftPrice", tokenId);
     setPrice(price);
     const getOwner = await _fetch("ownerOf", tokenId);
     setOwner(getOwner);
+
+    const getTokenListingState = await _fetch("getTokenListingState", tokenId);
+    setListingState(getTokenListingState?.tokenState);
+
     const account = await _account();
     setAccount(account);
 
@@ -48,6 +61,7 @@ export default function NFTCard({ tokenId, reload = () => null }) {
       .then((data) => {
         setNftData(data);
       });
+    setLoading(false);
   }
 
   const buynow = async (title) => {
@@ -74,115 +88,127 @@ export default function NFTCard({ tokenId, reload = () => null }) {
   return (
     <>
       {start && <TransctionModal response={response} modalClose={modalClose} />}
+      {!loading ? (
+        (listingState !== "3" || isUserProfilePage) && (
+          <Grid item xs={12} sm={6} md={isUserProfilePage ? 4 : 2.4}>
+            <Card
+              sx={{
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "white",
+                border: "0.01px solid rgba(0, 0, 0, 0.09)",
+              }}
+            >
+              <Tooltip title={nftData?.name}>
+                <div
+                  style={{
+                    backgroundImage: `url(${nftData?.image})`,
+                    height: "150px",
+                    borderRadius: 5,
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                    margin: "15px 15px 0px 15px",
+                  }}
+                >
+                  <Grid container>
+                    <Grid xs={2}>
+                      <MarkAsFevourite tokenId={tokenId} reload={reload} />
+                    </Grid>
+                    <Grid xs={10} sx={{ textAlign: "right" }}>
+                      <RedirectToOpenSea tokenId={tokenId} />
+                    </Grid>
+                  </Grid>
+                </div>
+              </Tooltip>
 
-      <Card
-        sx={{
-          height: "100%",
-          // width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          backgroundColor: "white",
-          border: "0.01px solid rgba(0, 0, 0, 0.09)",
-        }}
-      >
-        <Tooltip title="Nefrofeel by Pablo Picasso">
-          <div
-            style={{
-              backgroundImage: `url(${nftData?.image})`,
-              height: "150px",
-              borderRadius: 5,
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-              margin: "15px 15px 0px 15px",
-            }}
-          >
-            <Grid container>
-              <Grid xs={2}>
-                <MarkAsFevourite tokenId={tokenId} reload={reload} />
-              </Grid>
-              <Grid xs={10} sx={{ textAlign: "right" }}>
-                <RedirectToOpenSea tokenId={tokenId} />
-              </Grid>
-            </Grid>
-          </div>
-        </Tooltip>
+              <CardContent style={{ paddingBottom: 0 }}>
+                <Avatars />
+                <Typography
+                  style={{ fontSize: 14, cursor: "pointer" }}
+                  variant="body2"
+                  paragraph
+                  item
+                  fontWeight="600"
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "11rem",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.nativeEvent.stopImmediatePropagation();
+                    history(`/details/${tokenId}`);
+                    return;
+                  }}
+                >
+                  {nftData?.name} #{tokenId}
+                </Typography>
 
-        <CardContent style={{ paddingBottom: 0 }}>
-          <Avatars />
-          <Typography
-            style={{ fontSize: 14, cursor: "pointer" }}
-            variant="body2"
-            paragraph
-            item
-            fontWeight="600"
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              width: "11rem",
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.nativeEvent.stopImmediatePropagation();
-              history(`/details/${tokenId}`);
-              return;
-            }}
-          >
-            {nftData?.name} #{tokenId}
-          </Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                  }}
+                >
+                  <Tooltip title="Ethereum">
+                    <img
+                      alt="nft"
+                      width="15px"
+                      height="15px"
+                      src={getIcon()}
+                      style={{ marginRight: 5 }}
+                    ></img>
+                  </Tooltip>
+                  <p>
+                    <span className="text-secondary" style={{ color: "grey" }}>
+                      Price{" "}
+                    </span>
+                    <strong style={{ fontSize: 12, fontWeight: "bold" }}>
+                      {convertWeiToToken(price)} {getSymbol()}
+                    </strong>
+                  </p>
+                </div>
+              </CardContent>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Tooltip title="Ethereum">
-              <img
-                alt="nft"
-                width="15px"
-                height="15px"
-                src={getIcon()}
-                style={{ marginRight: 5 }}
-              ></img>
-            </Tooltip>
-            <p>
-              <span className="text-secondary" style={{ color: "grey" }}>
-                Price{" "}
-              </span>
-              <strong style={{ fontSize: 12, fontWeight: "bold" }}>
-                {convertWeiToToken(price)} {getSymbol()}
-              </strong>
-            </p>
-          </div>
-        </CardContent>
-
-        {owner !== account && (
-          <Button
-            variant="outlined"
-            size="small"
-            sx={{
-              marginX: "15px",
-              marginBottom: "15px",
-            }}
-            onClick={() => buynow(`NFT #${tokenId}`)}
-            style={{
-              border: "2px solid #1976d2",
-              fontSize: 10,
-              fontWeight: "bold",
-              padding: 8,
-            }}
-          >
-            {isDoingPayment ? (
-              <>
-                <CircularProgress size={20} style={{ marginRight: 10 }} />{" "}
-                Please wait...
-              </>
-            ) : (
-              "Buy Now"
-            )}
-          </Button>
-        )}
-      </Card>
+              {listingState === "2" ||
+                (owner !== account && (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      marginX: "15px",
+                      marginBottom: "15px",
+                    }}
+                    onClick={() => buynow(`NFT #${tokenId}`)}
+                    style={{
+                      border: "2px solid #1976d2",
+                      fontSize: 10,
+                      fontWeight: "bold",
+                      padding: 8,
+                    }}
+                  >
+                    {isDoingPayment ? (
+                      <>
+                        <CircularProgress
+                          size={20}
+                          style={{ marginRight: 10 }}
+                        />{" "}
+                        Please wait...
+                      </>
+                    ) : (
+                      "Buy Now"
+                    )}
+                  </Button>
+                ))}
+            </Card>
+          </Grid>
+        )
+      ) : (
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Loader count="1" xs={12} sm={12} md={12} />
+        </Grid>
+      )}
     </>
   );
 }

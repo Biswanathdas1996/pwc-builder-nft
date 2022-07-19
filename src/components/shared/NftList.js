@@ -65,13 +65,15 @@ export default function ArtExplore({ title, subTitle, data }) {
           </Toolbar>
         </Container>
 
-        <Container sx={{ py: 1 }}>
-          <Grid container spacing={4}>
-            {data?.map((item) => (
-              <NftCard tokenId={item} />
-            ))}
-          </Grid>
-        </Container>
+        <Grid container spacing={4}>
+          {data && data?.length > 0 ? (
+            data?.map((item) => <NftCard tokenId={item} />)
+          ) : (
+            <Grid item xs={12} sm={12} md={12}>
+              <h3>No NFT available</h3>
+            </Grid>
+          )}
+        </Grid>
       </>
 
       <Box sx={{ bgcolor: "background.paper", p: 6 }}></Box>

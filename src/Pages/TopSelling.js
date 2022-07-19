@@ -65,11 +65,7 @@ export default function HomePage() {
 
       <Grid container spacing={4}>
         {tokens && tokens?.length > 0 ? (
-          tokens?.map((item) => (
-            <Grid item xs={12} sm={6} md={2.4}>
-              <NftCard tokenId={item} />
-            </Grid>
-          ))
+          tokens?.map((item) => <NftCard tokenId={item} />)
         ) : loading ? (
           <Grid item xs={12} sm={12} md={12}>
             <Loader count="10" xs={12} sm={6} md={2.4} />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, FieldArray } from "formik";
 import * as Yup from "yup";
 import { Card, Grid } from "@mui/material";
-import { _transction } from "../../src/CONTRACT-ABI/connect";
+import { _transction_signed, _account } from "../../src/CONTRACT-ABI/connect";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
@@ -17,6 +17,11 @@ import MultipleImgUpload from "../components/shared/MultipleImgUpload";
 // import { getSymbol } from "../utils/currencySymbol";
 import { getResizedFile } from "../utils/reSizeImg";
 import { uploadFileToIpfs, getIpfsUrI } from "../utils/ipfs";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import { getTokenListingState } from "../utils/tokenListingState";
 import "../styles/background.css";
 
 const web3 = new Web3(window.ethereum);
@@ -38,6 +43,8 @@ const Mint = () => {
   const [checked, setChecked] = useState(false);
   const [description, setDescription] = useState(null);
   const [images, setImages] = useState([]);
+  const [tokenListingState, setTokenListingState] = useState("1");
+
   const onChange = (imageList, addUpdateIndex) => {
     setImages(imageList);
   };
@@ -91,14 +98,16 @@ const Mint = () => {
       );
 
       console.log("---metadta-->", resultsSaveMetaData.path);
-
-      responseData = await _transction(
+      const account = await _account();
+      responseData = await _transction_signed(
         "mintNFT",
         getIpfsUrI(resultsSaveMetaData.path),
         web3.utils.toWei(price.toString(), "ether"),
         royelty,
         category,
-        getIpfsUrI(uplodPrivetContent.path)
+        getIpfsUrI(uplodPrivetContent.path),
+        account,
+        tokenListingState
       );
     }
     setResponse(responseData);
@@ -465,6 +474,51 @@ const Mint = () => {
                                         </div>
                                       )}
                                     />
+                                  </div>
+                                </Grid>
+                                <Grid
+                                  item
+                                  lg={12}
+                                  md={12}
+                                  sm={12}
+                                  xs={12}
+                                  style={{ marginTop: 20 }}
+                                >
+                                  <div
+                                    className="form-group"
+                                    style={{ marginLeft: 10, marginTop: 10 }}
+                                  >
+                                    <FormControl component="fieldset">
+                                      <label for="title" className="my-2">
+                                        Choose accessability{" "}
+                                      </label>
+                                      <RadioGroup
+                                        aria-label="gender"
+                                        name="gender1"
+                                        value={tokenListingState}
+                                        onChange={(event) => {
+                                          setTokenListingState(
+                                            event.target.value
+                                          );
+                                        }}
+                                      >
+                                        <FormControlLabel
+                                          value="1"
+                                          control={<Radio />}
+                                          label={getTokenListingState("1")}
+                                        />
+                                        <FormControlLabel
+                                          value="2"
+                                          control={<Radio />}
+                                          label={getTokenListingState("2")}
+                                        />
+                                        <FormControlLabel
+                                          value="3"
+                                          control={<Radio />}
+                                          label={getTokenListingState("3")}
+                                        />
+                                      </RadioGroup>
+                                    </FormControl>
                                   </div>
                                 </Grid>
                                 <Grid
