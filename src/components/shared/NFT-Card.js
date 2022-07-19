@@ -5,7 +5,7 @@ import CardContent from "@mui/material/CardContent";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Tooltip } from "@mui/material";
-import Avatars from "./Avatars";
+
 import { useNavigate } from "react-router-dom";
 import { _fetch, _account } from "../../CONTRACT-ABI/connect";
 import { buyNft, displayRazorpay } from "../../functions/buyNft";
@@ -15,8 +15,14 @@ import RedirectToOpenSea from "./RedirectToOpenSea";
 import { getIcon } from "../../utils/currencyIcon";
 import { getSymbol } from "../../utils/currencySymbol";
 import { convertWeiToToken } from "../../utils/convertPrice";
+import { getTokenListingState } from "../../utils/tokenListingState";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Loader from "../shared/Loader";
+
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import VpnLockIcon from "@material-ui/icons/VpnLock";
+import ShopTwoIcon from "@material-ui/icons/ShopTwo";
+import AccessibilityNewIcon from "@material-ui/icons/AccessibilityNew";
 
 export default function NFTCard({
   tokenId,
@@ -85,6 +91,52 @@ export default function NFTCard({
     history("/profile");
   };
 
+  const selfOwner = () => {
+    if (owner === account) {
+      return (
+        <>
+          <Tooltip title={`You own this NFT`}>
+            <AccessibilityNewIcon
+              style={{ color: "#4caf50", fontSize: 20, margin: 5 }}
+            />
+          </Tooltip>
+        </>
+      );
+    }
+  };
+
+  const badgeUI = () => {
+    if (listingState === "3") {
+      return (
+        <>
+          <Tooltip title={getTokenListingState(listingState)}>
+            <VpnLockIcon
+              style={{ color: "#bf5a00d6", fontSize: 20, margin: 5 }}
+            />
+          </Tooltip>
+        </>
+      );
+    } else if (listingState === "2") {
+      return (
+        <>
+          <Tooltip title={getTokenListingState(listingState)}>
+            <VisibilityIcon
+              style={{ color: "#bf5a00d6", fontSize: 20, margin: 5 }}
+            />
+          </Tooltip>
+        </>
+      );
+    } else if (listingState === "1") {
+      return (
+        <>
+          <Tooltip title={getTokenListingState(listingState)}>
+            <ShopTwoIcon style={{ color: "rgb(149 99 2)", fontSize: 20 }} />
+          </Tooltip>
+        </>
+      );
+    }
+  };
+
   return (
     <>
       {start && <TransctionModal response={response} modalClose={modalClose} />}
@@ -123,7 +175,8 @@ export default function NFTCard({
               </Tooltip>
 
               <CardContent style={{ paddingBottom: 0 }}>
-                <Avatars />
+                {badgeUI()}
+                {selfOwner()}
                 <Typography
                   style={{ fontSize: 14, cursor: "pointer" }}
                   variant="body2"

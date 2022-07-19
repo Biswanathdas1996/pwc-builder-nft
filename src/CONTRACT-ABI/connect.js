@@ -40,9 +40,7 @@ export const _transction_signed = async (service, ...props) => {
   web3.eth.accounts.wallet.add(signer);
   const contract = new web3.eth.Contract(ABI, ADDRESS);
   const callService = _.get(contract, ["methods", service]);
-
   const tx = callService(...props);
-
   const responseData = await tx
     .send({
       from: signer.address,
