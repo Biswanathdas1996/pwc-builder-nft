@@ -15,6 +15,7 @@ import RedirectToOpenSea from "./RedirectToOpenSea";
 import { getIcon } from "../../utils/currencyIcon";
 import { getSymbol } from "../../utils/currencySymbol";
 import { convertWeiToToken } from "../../utils/convertPrice";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 export default function NFTCard({ tokenId, reload = () => null }) {
   const [nftData, setNftData] = useState(null);
@@ -23,6 +24,8 @@ export default function NFTCard({ tokenId, reload = () => null }) {
   const [response, setResponse] = useState(null);
   const [owner, setOwner] = useState(null);
   const [account, setAccount] = useState(null);
+
+  const [isDoingPayment, setIsDoingPayment] = useState(false);
 
   let history = useNavigate();
 
@@ -48,8 +51,9 @@ export default function NFTCard({ tokenId, reload = () => null }) {
   }
 
   const buynow = async (title) => {
+    setIsDoingPayment(true);
     const price = await _fetch("getNftPrice", tokenId);
-    displayRazorpay(
+    await displayRazorpay(
       price,
       async function (response) {
         setStart(true);
@@ -58,6 +62,7 @@ export default function NFTCard({ tokenId, reload = () => null }) {
       },
       title
     );
+    setIsDoingPayment(false);
   };
 
   const modalClose = () => {
@@ -167,7 +172,14 @@ export default function NFTCard({ tokenId, reload = () => null }) {
               padding: 8,
             }}
           >
-            Buy Now
+            {isDoingPayment ? (
+              <>
+                <CircularProgress size={20} style={{ marginRight: 10 }} />{" "}
+                Please wait...
+              </>
+            ) : (
+              "Buy Now"
+            )}
           </Button>
         )}
       </Card>
