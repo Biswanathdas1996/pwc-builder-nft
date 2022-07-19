@@ -25,7 +25,7 @@ export default function DetailsPage({ match }) {
   const [price, setPrice] = useState(null);
   const [response, setResponse] = useState(null);
   const [address, setAddress] = useState(null);
-
+  const [isDoingPayment, setIsDoingPayment] = useState(false);
   const { tokenId } = useParams();
 
   useEffect(() => {
@@ -58,8 +58,9 @@ export default function DetailsPage({ match }) {
   }
 
   const buynow = async (title) => {
+    setIsDoingPayment(true);
     const price = await _fetch("getNftPrice", tokenId);
-    displayRazorpay(
+    await displayRazorpay(
       price,
       async function (response) {
         setStart(true);
@@ -68,6 +69,7 @@ export default function DetailsPage({ match }) {
       },
       title
     );
+    setIsDoingPayment(false);
   };
 
   const modalClose = () => {
@@ -105,6 +107,7 @@ export default function DetailsPage({ match }) {
                   account={account}
                   tokenId={tokenId}
                   fetchNftInfo={fetchNftInfo}
+                  isDoingPayment={isDoingPayment}
                 />
               </Grid>
             </Grid>

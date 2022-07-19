@@ -22,6 +22,7 @@ import TransferNft from "./TransferNFT";
 
 import { getIcon } from "../../utils/currencyIcon";
 import { getSymbol } from "../../utils/currencySymbol";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const countData = ["05", "08", "35", "12"];
 
@@ -33,6 +34,7 @@ const RightContent = ({
   account,
   tokenId,
   fetchNftInfo,
+  isDoingPayment,
 }) => {
   const [value, setValue] = React.useState("2");
 
@@ -157,7 +159,20 @@ const RightContent = ({
             }}
             onClick={() => buynow(`NFT #${tokenId}`)}
           >
-            Buy for {price / 1000000000000000000} {getSymbol()}
+            {isDoingPayment ? (
+              <>
+                <CircularProgress
+                  size={20}
+                  style={{ marginRight: 10 }}
+                  color="white"
+                />{" "}
+                Please wait...
+              </>
+            ) : (
+              <>
+                Buy for {price / 1000000000000000000} {getSymbol()}
+              </>
+            )}
           </Button>
           <Button
             variant="outlined"
@@ -225,7 +240,7 @@ const RightContent = ({
                 }}
               />
               <Tab
-                label="Privet Content"
+                label="Private Content"
                 value="3"
                 sx={{
                   textTransform: "none",

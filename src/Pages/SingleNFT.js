@@ -475,10 +475,21 @@ const Mint = () => {
                                   xs={12}
                                   style={{ marginTop: 20 }}
                                 >
-                                  <MultipleImgUpload
-                                    onchange={onChange}
-                                    images={images}
-                                  />
+                                  <div
+                                    className="form-group"
+                                    style={{ marginLeft: 10, marginTop: 10 }}
+                                  >
+                                    <label for="title" className="my-2">
+                                      Add private contents{" "}
+                                      <span className="text-danger">
+                                        (*Only token owner can access this)
+                                      </span>
+                                    </label>
+                                    <MultipleImgUpload
+                                      onchange={onChange}
+                                      images={images}
+                                    />
+                                  </div>
                                 </Grid>
                                 <Grid item lg={12} md={12} sm={12} xs={12}>
                                   <div
