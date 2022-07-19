@@ -5,9 +5,9 @@ const compress = new Compress();
 const reSizeImg = (file) => {
   return compress.compress([file], {
     size: 4, // the max size in MB, defaults to 2MB
-    quality: 0.75, // the quality of the image, max is 1,
-    maxWidth: 350, // the max width of the output image, defaults to 1920px
-    maxHeight: 350, // the max height of the output image, defaults to 1920px
+    quality: 1, // the quality of the image, max is 1,
+    maxWidth: 645, // the max width of the output image, defaults to 1920px
+    maxHeight: 428, // the max height of the output image, defaults to 1920px
     resize: true, // defaults to true, set false if you do not want to resize the image width and height
   });
 };

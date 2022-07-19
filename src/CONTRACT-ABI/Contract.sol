@@ -6,13 +6,15 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+import "hardhat/console.sol";
 
 contract MyNFT is ERC721URIStorage, Ownable {
     using Counters for Counters.Counter;
     uint[] public nftTokenList;
     Counters.Counter private _tokenIds;
    
-
     struct Royalty {
         address recipient;
         uint256 value;
@@ -22,20 +24,30 @@ contract MyNFT is ERC721URIStorage, Ownable {
         uint256 amount;
     }
 
-   struct Collection {
+    struct Collection {
         string collection;
         uint token;
     }
 
+    struct PrivetContent {
+        string privetUri;
+        uint token;
+    }
 
     mapping(uint256 => Royalty) internal _royalties;
+    mapping(uint256 => PrivetContent) internal _privetContains;
     mapping(uint256 => Price) internal _prices;
     Collection[] public collections;
 
-    constructor() ERC721("Biswanath", "BIS") {}
+    constructor() ERC721("Real Estate Nft", "BUILDING") {}
 
-
-    function mintNFT(string memory tokenURI, uint amount, uint royelrtPercentage, string memory category)
+    function mintNFT(
+        string memory tokenURI, 
+        uint amount, 
+        uint royelrtPercentage, 
+        string memory category, 
+        string memory privetUri
+        )
         public
         returns (uint256)
     {
@@ -48,11 +60,11 @@ contract MyNFT is ERC721URIStorage, Ownable {
         _setNftPrice(newItemId,amount);
         _setTokenRoyalty(newItemId,msg.sender, royelrtPercentage);
         _setNftCollection(newItemId,category);
+        _setTokenPrivetContent(newItemId,privetUri);
         return newItemId;
     }
     
     function buyNft( address from, address to, uint tokenId) public payable {
-        
         Royalty memory royalty = _royalties[tokenId];
         uint nftPrice = getNftPrice(tokenId);
         require(msg.value >= nftPrice);
@@ -70,11 +82,13 @@ contract MyNFT is ERC721URIStorage, Ownable {
         _transfer(from, to, tokenId);
     }
 
+    function doTransfer( address from, address to, uint tokenId) public  {
+        _transfer(from, to, tokenId);
+    }
+
     function getToken() public view returns (uint[] memory) {
         return  nftTokenList;
     }
-
-
 
     function _setNftPrice(
         uint256 token,
@@ -88,7 +102,6 @@ contract MyNFT is ERC721URIStorage, Ownable {
         view
         returns (uint amount)
     {
-      
         Price memory priceData = _prices[tokenId];
         return (priceData.amount);
     }
@@ -99,14 +112,12 @@ contract MyNFT is ERC721URIStorage, Ownable {
         uint256 value
     ) internal {
         require(value <= 99, 'ERC2981Royalties: Too high');
-
         _royalties[id] = Royalty(recipient, value);
     }
 
     function royaltyInfo(uint256 tokenId, uint256 sellPrice)
         public
         view
-        
         returns (address receiver, uint256 royaltyAmount)
     {
         Royalty memory royalty = _royalties[tokenId];
@@ -114,7 +125,6 @@ contract MyNFT is ERC721URIStorage, Ownable {
     }
    
     function getRoyeltyValue( uint tokenId) public view returns(uint amount){
-        
         Royalty memory royalty = _royalties[tokenId];
         return royalty.value;
     }
@@ -129,6 +139,20 @@ contract MyNFT is ERC721URIStorage, Ownable {
 
     function getCollection() public view returns ( Collection[] memory) {
         return collections;
+    }
+
+    function _setTokenPrivetContent(
+        uint256 id,
+        string memory privetUri
+    ) private {
+        _privetContains[id] = PrivetContent(privetUri, id);
+    }
+
+    function getPrivetContent( uint tokenId) public view returns (string memory privetUri, uint256 token){
+        address tokenOwner = ownerOf(tokenId);
+        require(msg.sender == tokenOwner, "Privet content is only accessable to token owner");
+        PrivetContent memory privetContent = _privetContains[tokenId];
+        return (privetContent.privetUri, privetContent.token );
     }
   
 }

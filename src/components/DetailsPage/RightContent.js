@@ -12,12 +12,13 @@ import {
 import React from "react";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
-import Bid from "./Bid";
+import PrivetContent from "./PrivetContent";
 import Attributes from "./Attributes";
 import TransactionHistory from "./TransactionHistory";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import UpdatePrice from "./UpdatePrice";
+import TransferNft from "./TransferNFT";
 
 import { getIcon } from "../../utils/currencyIcon";
 import { getSymbol } from "../../utils/currencySymbol";
@@ -68,7 +69,7 @@ const RightContent = ({
             </Typography>
             <Tooltip title="Contrct Address">
               <Link
-                href="https://rinkeby.etherscan.io/address/0xdfc34335664a0c2c548cf0c837e9b0a9315eeda2"
+                href={`https://rinkeby.etherscan.io/address/${owner}`}
                 target="_blank"
                 sx={{ textDecoration: "none" }}
               >
@@ -174,13 +175,26 @@ const RightContent = ({
           </Button>
         </div>
       ) : (
-        <div style={{ marginTop: "30px", marginBottom: "30px" }}>
-          <UpdatePrice
-            price={price}
-            tokenId={tokenId}
-            fetchNftInfo={fetchNftInfo}
-          />
-        </div>
+        <Grid container marginTop="10px">
+          <Grid xs={6}>
+            <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+              <UpdatePrice
+                price={price}
+                tokenId={tokenId}
+                fetchNftInfo={fetchNftInfo}
+              />
+            </div>
+          </Grid>
+          <Grid xs={6}>
+            <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+              <TransferNft
+                price={price}
+                tokenId={tokenId}
+                fetchNftInfo={fetchNftInfo}
+              />
+            </div>
+          </Grid>
+        </Grid>
       )}
 
       <Box sx={{ width: "100%", typography: "body1" }}>
@@ -211,7 +225,7 @@ const RightContent = ({
                 }}
               />
               <Tab
-                label="Bid"
+                label="Privet Content"
                 value="3"
                 sx={{
                   textTransform: "none",
@@ -223,7 +237,7 @@ const RightContent = ({
           </Box>
           <Attributes attributes={attributes} />
           <TransactionHistory tokenId={tokenId} />
-          <Bid />
+          <PrivetContent tokenId={tokenId} />
         </TabContext>
       </Box>
     </Container>

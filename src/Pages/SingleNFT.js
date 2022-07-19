@@ -3,7 +3,6 @@ import { Formik, Form, Field, FieldArray } from "formik";
 import * as Yup from "yup";
 import { Card, Grid } from "@mui/material";
 import { _transction } from "../../src/CONTRACT-ABI/connect";
-import { create } from "ipfs-http-client";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import Web3 from "web3";
@@ -14,14 +13,13 @@ import DeleteOutlineIcon from "@mui/icons-material/Delete";
 import { pink } from "@mui/material/colors";
 import TransctionModal from "../components/shared/TransctionModal";
 import HeaderWrapper from "../components/shared/BackgroundUI";
+import MultipleImgUpload from "../components/shared/MultipleImgUpload";
 // import { getSymbol } from "../utils/currencySymbol";
 import { getResizedFile } from "../utils/reSizeImg";
-
+import { uploadFileToIpfs, getIpfsUrI } from "../utils/ipfs";
 import "../styles/background.css";
 
 const web3 = new Web3(window.ethereum);
-
-const client = create("https://ipfs.infura.io:5001/api/v0");
 
 const VendorSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
@@ -39,6 +37,10 @@ const Mint = () => {
   const [preview, setPreview] = useState();
   const [checked, setChecked] = useState(false);
   const [description, setDescription] = useState(null);
+  const [images, setImages] = useState([]);
+  const onChange = (imageList, addUpdateIndex) => {
+    setImages(imageList);
+  };
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
@@ -54,27 +56,15 @@ const Mint = () => {
     royelty,
   }) => {
     setStart(true);
+    const uplodPrivetContent = await uploadFileToIpfs(JSON.stringify(images));
+    console.log("--privet content--->", uplodPrivetContent?.path);
+
     let responseData;
 
     const dummyAttrribute = [
       {
-        display_type: "boost_number",
-        trait_type: "Aqua Power",
-        value: 40,
-      },
-      {
-        display_type: "boost_percentage",
-        trait_type: "Stamina Increase",
-        value: 10,
-      },
-      {
-        display_type: "number",
-        trait_type: "Generation",
-        value: 2,
-      },
-      {
         display_type: "date",
-        trait_type: "publish-date",
+        trait_type: "Publish Date",
         value: new Date(),
       },
     ];
@@ -84,26 +74,31 @@ const Mint = () => {
       if (navBarLessRoutes.indexOf(file?.type) === -1) {
         reSizedFile = await getResizedFile(file);
       }
-      const results = await client.add(reSizedFile);
+
+      const results = await uploadFileToIpfs(reSizedFile);
       console.log("--img fingerpring-->", results.path);
       const metaData = {
         name: title,
         author: authorname,
         category: category,
-        image: `https://ipfs.infura.io/ipfs/${results.path}`,
+        image: getIpfsUrI(results.path),
         description: description,
         attributes: attributes.concat(dummyAttrribute),
       };
 
-      const resultsSaveMetaData = await client.add(JSON.stringify(metaData));
+      const resultsSaveMetaData = await uploadFileToIpfs(
+        JSON.stringify(metaData)
+      );
+
       console.log("---metadta-->", resultsSaveMetaData.path);
 
       responseData = await _transction(
         "mintNFT",
-        `https://ipfs.infura.io/ipfs/${resultsSaveMetaData.path}`,
+        getIpfsUrI(resultsSaveMetaData.path),
         web3.utils.toWei(price.toString(), "ether"),
         royelty,
-        category
+        category,
+        getIpfsUrI(uplodPrivetContent.path)
       );
     }
     setResponse(responseData);
@@ -471,6 +466,19 @@ const Mint = () => {
                                       )}
                                     />
                                   </div>
+                                </Grid>
+                                <Grid
+                                  item
+                                  lg={12}
+                                  md={12}
+                                  sm={12}
+                                  xs={12}
+                                  style={{ marginTop: 20 }}
+                                >
+                                  <MultipleImgUpload
+                                    onchange={onChange}
+                                    images={images}
+                                  />
                                 </Grid>
                                 <Grid item lg={12} md={12} sm={12} xs={12}>
                                   <div

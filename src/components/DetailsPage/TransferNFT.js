@@ -1,32 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { Grid } from "@mui/material";
-import { _transction } from "../../CONTRACT-ABI/connect";
+import { _transction, _fetch } from "../../CONTRACT-ABI/connect";
 import TransctionModal from "../shared/TransctionModal";
-import Web3 from "web3";
-import { getSymbol } from "../../utils/currencySymbol";
-
-const web3 = new Web3(window.ethereum);
 
 const VendorSchema = Yup.object().shape({
-  amount: Yup.string().required("Amount is required"),
+  sendTo: Yup.string().required("Send address is required"),
 });
 
-const UpdatePrice = ({ price, tokenId, fetchNftInfo }) => {
+const TransferNFT = ({ price, tokenId, fetchNftInfo }) => {
   const [start, setStart] = useState(false);
   const [response, setResponse] = useState(null);
+  const [owner, setOwner] = useState(null);
 
-  const saveData = async ({ amount }) => {
+  useEffect(() => {
+    fetchAllPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function fetchAllPosts() {
+    const getOwner = await _fetch("ownerOf", tokenId);
+
+    setOwner(getOwner);
+  }
+
+  const saveData = async ({ sendTo }) => {
     setStart(true);
-    let responseData;
-
-    responseData = await _transction(
-      "_setNftPrice",
-      tokenId,
-      web3.utils.toWei(amount.toString(), "ether")
+    console.log(owner, sendTo, tokenId);
+    const responseData = await _transction(
+      "transferFrom",
+      owner,
+      sendTo,
+      tokenId
     );
-
     setResponse(responseData);
     fetchNftInfo();
   };
@@ -47,7 +54,7 @@ const UpdatePrice = ({ price, tokenId, fetchNftInfo }) => {
       >
         <Formik
           initialValues={{
-            amount: web3.utils.fromWei(price.toString(), "ether"),
+            sendTo: "",
           }}
           validationSchema={VendorSchema}
           onSubmit={(values, { setSubmitting }) => {
@@ -62,13 +69,13 @@ const UpdatePrice = ({ price, tokenId, fetchNftInfo }) => {
                   <div className="form-group" style={{ float: "right" }}>
                     <Field
                       type="text"
-                      name="amount"
+                      name="sendTo"
                       autoComplete="flase"
-                      placeholder={`Enter amount (${getSymbol()})`}
+                      placeholder="Reciever address"
                       className={`form-control text-muted ${
-                        touched.amount && errors.amount ? "is-invalid" : ""
+                        touched?.sendTo && errors?.sendTo ? "is-invalid" : ""
                       }`}
-                      style={{ marginRight: 10, padding: 6 }}
+                      style={{ padding: 6 }}
                     />
                   </div>
                 </Grid>
@@ -76,9 +83,9 @@ const UpdatePrice = ({ price, tokenId, fetchNftInfo }) => {
                   <div className="form-group" style={{ float: "left" }}>
                     <span className="input-group-btn">
                       <input
-                        className="btn btn-default btn-primary"
+                        className="btn btn-default btn-secondary"
                         type="submit"
-                        value={"Update Price"}
+                        value={"Transfer Nft"}
                       />
                     </span>
                   </div>
@@ -91,4 +98,4 @@ const UpdatePrice = ({ price, tokenId, fetchNftInfo }) => {
     </>
   );
 };
-export default UpdatePrice;
+export default TransferNFT;

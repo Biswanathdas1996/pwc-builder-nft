@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 // import MonetizationOnOutlined from "@mui/icons-material/MonetizationOnOutlined";
 // import MaleImg from "../../assets/images/female1.png";
-import { getIcon } from "../../utils/currencyIcon";
+// import { getIcon } from "../../utils/currencyIcon";
 import CustomButton from "./CustomButton";
 // import CustomTransactionStat from "./CustomTransactionStat";
 
@@ -24,12 +24,12 @@ const columns = [
   { id: "from", label: "FROM", minWidth: 170 },
   { id: "to", label: "TO", minWidth: 100 },
 
-  {
-    id: "price",
-    label: "PRICE",
-    minWidth: 170,
-    align: "center",
-  },
+  // {
+  //   id: "price",
+  //   label: "PRICE",
+  //   minWidth: 170,
+  //   align: "center",
+  // },
   {
     id: "type",
     label: "TYPE",
@@ -48,7 +48,7 @@ const MyTransaction = ({ tokenId }) => {
     await frtchAccounttransction()
       .then((response) => response.json())
       .then((result) => {
-        console.log("--------->", result);
+        // console.log("--------->", result);
         settransctions(result.result);
       })
       .catch((error) => console.log("error", error));
@@ -158,7 +158,7 @@ const MyTransaction = ({ tokenId }) => {
                         </Tooltip>
                       </TableCell>
 
-                      <TableCell align="left">
+                      {/* <TableCell align="left">
                         <Stack
                           direction="row"
                           spacing={1}
@@ -184,7 +184,7 @@ const MyTransaction = ({ tokenId }) => {
                             {data?.value / 1000000000000000000}
                           </Typography>
                         </Stack>
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell align="center">
                         <CustomButton
                           type={

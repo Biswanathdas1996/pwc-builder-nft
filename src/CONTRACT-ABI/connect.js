@@ -101,11 +101,12 @@ export const _account = async () => {
 
 export const _fetch = async (service, ...props) => {
   const callService = _.get(await getContract(), ["methods", service]);
+  const accounts = await web3.eth.getAccounts();
   let data;
   if (props) {
-    data = await callService(...props).call();
+    data = await callService(...props).call({ from: accounts[0] });
   } else {
-    data = await callService().call();
+    data = await callService().call({ from: accounts[0] });
   }
 
   return data;
