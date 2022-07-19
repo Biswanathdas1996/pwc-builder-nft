@@ -481,10 +481,11 @@ const Mint = () => {
                                   >
                                     <label for="title" className="my-2">
                                       Add private contents{" "}
-                                      <span className="text-danger">
+                                      <small className="text-danger">
                                         (*Only token owner can access this)
-                                      </span>
+                                      </small>
                                     </label>
+
                                     <MultipleImgUpload
                                       onchange={onChange}
                                       images={images}

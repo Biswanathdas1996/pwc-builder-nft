@@ -48,6 +48,10 @@ function MultipleImgUpload({ onchange, images }) {
             >
               Remove all images
             </Button>
+            <br />
+            <small className="text-success">
+              ( Can upload multiple images )
+            </small>
             <Grid
               container
               columnSpacing={{ xs: 1, sm: 2, md: 3 }}
