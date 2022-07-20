@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-
 import "hardhat/console.sol";
 
 contract MyNFT is ERC721URIStorage, Ownable {
@@ -34,9 +33,16 @@ contract MyNFT is ERC721URIStorage, Ownable {
         uint token;
     }
 
+    struct TokenListingState {
+        string tokenState;
+        uint token;
+    }
+
     mapping(uint256 => Royalty) internal _royalties;
     mapping(uint256 => PrivetContent) internal _privetContains;
     mapping(uint256 => Price) internal _prices;
+    mapping(uint256 => TokenListingState) internal _tokenListingState;
+
     Collection[] public collections;
 
     constructor() ERC721("Real Estate Nft", "BUILDING") {}
@@ -46,7 +52,9 @@ contract MyNFT is ERC721URIStorage, Ownable {
         uint amount, 
         uint royelrtPercentage, 
         string memory category, 
-        string memory privetUri
+        string memory privetUri,
+        address createrAccount,
+        string memory tokenListingState
         )
         public
         returns (uint256)
@@ -54,13 +62,14 @@ contract MyNFT is ERC721URIStorage, Ownable {
         require(royelrtPercentage <= 20,'Max 20% royalty allowed');
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
-        _mint(msg.sender, newItemId);
+        _mint(createrAccount, newItemId);
         _setTokenURI(newItemId, tokenURI);
         nftTokenList.push(newItemId);
         _setNftPrice(newItemId,amount);
-        _setTokenRoyalty(newItemId,msg.sender, royelrtPercentage);
+        _setTokenRoyalty(newItemId,createrAccount, royelrtPercentage);
         _setNftCollection(newItemId,category);
         _setTokenPrivetContent(newItemId,privetUri);
+        setTokenListingState(newItemId,tokenListingState);
         return newItemId;
     }
     
@@ -139,6 +148,18 @@ contract MyNFT is ERC721URIStorage, Ownable {
 
     function getCollection() public view returns ( Collection[] memory) {
         return collections;
+    }
+
+    function setTokenListingState(
+        uint256 id,
+        string memory tokenState
+    ) public {
+        _tokenListingState[id] = TokenListingState(tokenState, id);
+    }
+    
+    function getTokenListingState( uint tokenId) public view returns (string memory tokenState, uint256 token){
+        TokenListingState memory tokenListingState = _tokenListingState[tokenId];
+        return (tokenListingState.tokenState, tokenListingState.token );
     }
 
     function _setTokenPrivetContent(
