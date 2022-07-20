@@ -24,6 +24,7 @@ import TransferNft from "./TransferNFT";
 import { getIcon } from "../../utils/currencyIcon";
 import { getSymbol } from "../../utils/currencySymbol";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { accessablity } from "../../utils/tokenListingState";
 
 const countData = ["05", "08", "35", "12"];
 
@@ -39,7 +40,6 @@ const RightContent = ({
   listingState,
 }) => {
   const [value, setValue] = React.useState("2");
-  console.log("listingState--------->", listingState);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -149,7 +149,7 @@ const RightContent = ({
       </Grid>
       {owner !== account ? (
         <div style={{ marginTop: "30px", marginBottom: "30px" }}>
-          {listingState === "1" && (
+          {listingState === accessablity.Listable && (
             <Button
               variant="contained"
               sx={{

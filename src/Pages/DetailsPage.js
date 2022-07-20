@@ -9,6 +9,7 @@ import RecentActivity from "../components/shared/RecentActivity";
 import Loader from "../components/shared/Loader";
 import { buyNft, displayRazorpay } from "../functions/buyNft";
 import TransctionModal from "../components/shared/TransctionModal";
+import { accessablity } from "../utils/tokenListingState";
 
 import {
   getContractAddress,
@@ -80,7 +81,7 @@ export default function DetailsPage({ match }) {
     setResponse(null);
   };
 
-  if (listingState === "3" && owner !== account) {
+  if (listingState === accessablity.Privet && owner !== account) {
     return (
       <Container>
         <Grid spacing={4} marginY="50px">
